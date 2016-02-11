@@ -32,9 +32,8 @@ public class ExtendedITextReplacedElementFactory extends ITextReplacedElementFac
 	
 	/**
 	 * Renders an XML element (i.e. build its visual representation).
-	 * 
-	 * @see org.xhtmlrenderer.pdf.ITextReplacedElementFactory#createReplacedElement(org.xhtmlrenderer.layout.LayoutContext, org.xhtmlrenderer.render.BlockBox, org.xhtmlrenderer.extend.UserAgentCallback, int, int) for more information
 	 */
+	@Override
 	public ReplacedElement createReplacedElement(LayoutContext layoutContext, BlockBox blockBox, UserAgentCallback userAgentCallback, int cssWidth, int cssHeight) {
 		Element element = blockBox.getElement();
 		
@@ -78,13 +77,14 @@ public class ExtendedITextReplacedElementFactory extends ITextReplacedElementFac
 	 * 
 	 * @param element element to analyze
 	 * @return true if the specified element is an image with a data uri, false otherwise
-	 * @see http://en.wikipedia.org/wiki/Data_URI_scheme for more information
+	 *
+	 * see http://en.wikipedia.org/wiki/Data_URI_scheme for more information
 	 */
 	protected boolean isDataUriImage(Element element) {
 		if (element != null) {
 			String tag = element.getNodeName();
 			
-			if (tag.equalsIgnoreCase("img")) {
+			if ("img".equalsIgnoreCase(tag)) {
 				String src = element.getAttribute("src");
 				
 				if (src != null) {

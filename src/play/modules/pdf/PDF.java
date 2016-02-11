@@ -1,25 +1,23 @@
 /**
- *
  * Copyright 2010, Lunatech Labs.
- *
+ * <p>
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
- *
+ * <p>
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
+ * <p>
  * User: nicolas
  * Date: Feb 14, 2010
- *
  */
 package play.modules.pdf;
 
@@ -50,15 +48,15 @@ public class PDF {
 
     public static class Options {
 
-        public String FOOTER = null;
-        public String FOOTER_TEMPLATE = null;
-        public String HEADER = null;
-        public String HEADER_TEMPLATE = null;
-        public String ALL_PAGES = null;
-        public String EVEN_PAGES = null;
-        public String ODD_PAGES = null;
+        public String FOOTER;
+        public String FOOTER_TEMPLATE;
+        public String HEADER;
+        public String HEADER_TEMPLATE;
+        public String ALL_PAGES;
+        public String EVEN_PAGES;
+        public String ODD_PAGES;
 
-        public String filename = null;
+        public String filename;
 
         public IHtmlToPdfTransformer.PageSize pageSize = IHtmlToPdfTransformer.A4P;
     }
@@ -66,7 +64,7 @@ public class PDF {
     public static class PDFDocument {
         public String template;
         public Options options;
-        public Map<String, Object> args = new HashMap<String, Object>();
+        public Map<String, Object> args = new HashMap<>();
         List<IHtmlToPdfTransformer.CHeaderFooter> headerFooterList = new LinkedList<IHtmlToPdfTransformer.CHeaderFooter>();
         String content;
 
@@ -121,7 +119,6 @@ public class PDF {
         }
 
         public MultiPDFDocuments() {
-            // TODO Auto-generated constructor stub
         }
 
         public MultiPDFDocuments add(PDFDocument singleDoc) {
@@ -309,16 +306,16 @@ public class PDF {
                 throw new RenderPDFTemplate(docs, templateBinding.data);
             } else {
                 RenderPDFTemplate renderer = new RenderPDFTemplate(docs, templateBinding.data);
-                renderer.writePDF(out, Http.Request.current(), Http.Response.current());
+                renderer.writePDF(out, Http.Request.current());
             }
         } catch (TemplateNotFoundException ex) {
             if (ex.isSourceAvailable()) {
                 throw ex;
             }
-            StackTraceElement element = PlayException.getInterestingStrackTraceElement(ex);
+            StackTraceElement element = PlayException.getInterestingStackTraceElement(ex);
             if (element != null) {
-                throw new TemplateNotFoundException(ex.getPath(), Play.classes.getApplicationClass(element
-                        .getClassName()), element.getLineNumber());
+                throw new TemplateNotFoundException(ex.getPath(),
+                        Play.classes.getApplicationClass(element.getClassName()), element.getLineNumber());
             } else {
                 throw ex;
             }
