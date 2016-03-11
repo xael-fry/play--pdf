@@ -1,12 +1,15 @@
 ## Changelog
 
+### 1.3
+
+* remove unused file
+* add more unit-tests
+ 
 ### 1.2
 
 * fix bug with removing original of hacked classes from core-renderer.jar and yahp-internal.jar
 * upgrade to shaniparser 1.4.22
 * add normal slf4j logging
-
-
 
 ### 1.1
 

@@ -1,24 +1,3 @@
-/*
- * Copyright (C) 2007 by Quentin Anciaux
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Library General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Library General Public License
- * for more details.
- *
- * You should have received a copy of the GNU Library General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *	@author Quentin Anciaux
- */
-
-
 package org.allcolor.yahp.cl.converter;
 
 import com.lowagie.text.pdf.BaseFont;
@@ -27,6 +6,7 @@ import org.allcolor.xml.parser.CXmlParser;
 import org.allcolor.xml.parser.dom.ADocument;
 import org.allcolor.yahp.cl.converter.CDocumentCut.DocumentAndSize;
 import org.allcolor.yahp.converter.IHtmlToPdfTransformer;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.*;
@@ -106,7 +86,7 @@ public final class CHtmlToPdfFlyingSaucerTransformer implements IHtmlToPdfTransf
     }
   }
 
-  private static String removeScript(String a) {
+  static String removeScript(String a) {
     final List<String> toRemove = new ArrayList<>();
     final Pattern p = Pattern.compile("(<script\\s*)");
     final Matcher m = p.matcher(a);
@@ -454,24 +434,21 @@ public final class CHtmlToPdfFlyingSaucerTransformer implements IHtmlToPdfTransf
       final Tidy tidy = this.getTidy();
       final CShaniDomParser parser = this.getCShaniDomParser();
       final _ITextRenderer renderer = this.getITextRenderer();
-      final Reader r = CXmlParser.getReader(in);
-      final StringBuilder s = new StringBuilder();
-      final char[] buffer = new char[2048];
-      int inb;
-      while ((inb = r.read(buffer)) != -1) {
-        s.append(buffer, 0, inb);
+
+      String html;
+      try (Reader r = CXmlParser.getReader(in)) {
+        html = IOUtils.toString(r);
       }
-      r.close();
+      
       ByteArrayOutputStream bout = new ByteArrayOutputStream();
-      tidy.parse(
-          new ByteArrayInputStream(s.toString().getBytes("utf-8")),
-          bout);
+      tidy.parse(new ByteArrayInputStream(html.getBytes("utf-8")), bout);
+      
       final String result = removeScript(new String(bout.toByteArray(), "utf-8"));
       Document theDoc = parser
           .parse(new InputStreamReader(new ByteArrayInputStream(
               result.getBytes("utf-8")), "utf-8"));
       if (theDoc.toString().isEmpty()) {
-        theDoc = parser.parse(new StringReader(removeScript(s.toString())));
+        theDoc = parser.parse(new StringReader(removeScript(html)));
       }
       this.convertInputToVisibleHTML(theDoc);
       this.convertComboboxToVisibleHTML(theDoc);
@@ -547,12 +524,8 @@ public final class CHtmlToPdfFlyingSaucerTransformer implements IHtmlToPdfTransf
         body = mydoc.getDocumentElement().getElementsByTagName("body").item(0);
         head = mydoc.getDocumentElement().getElementsByTagName("head").item(0);
         try {
-          String surlForBase = ((Element) mydoc.getElementsByTagName(
-              "base").item(0)).getAttribute("href");
-          if ((surlForBase == null) || "".equals(surlForBase)) {
-            surlForBase = null;
-          }
-          if (surlForBase != null) {
+          String surlForBase = ((Element) mydoc.getElementsByTagName("base").item(0)).getAttribute("href");
+          if (surlForBase != null && !surlForBase.isEmpty()) {
             urlForBase = surlForBase;
           }
         }
