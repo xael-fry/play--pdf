@@ -35,6 +35,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
@@ -62,6 +63,12 @@ import java.util.LinkedHashMap;
 public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
   private static final int DEFAULT_IMAGE_CACHE_SIZE = 16;
 
+  static {
+    Logger.debug("*********************************************************************************");
+    Logger.debug("Loaded class NaiveUserAgent");
+    Logger.debug(new RuntimeException("load from: "), "see stacktrace");
+    Logger.debug("*********************************************************************************");
+  }
   /**
    * a (simple) LRU cache
    */
@@ -120,6 +127,8 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     InputStream is = null;
     uri = resolveURI(uri);
     try {
+      Logger.debug("Load resource from %s", uri);
+      
       URLConnection connection = new URL(uri).openConnection();
 
       if ("true".equals(Play.configuration.getProperty("play.pdf.ssl.acceptUnknownCertificate", "false"))) {
@@ -155,6 +164,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
       return connection.getInputStream();
     }
     catch (Exception e) {
+      Logger.error(e, "bad URL given: %s", uri);
       XRLog.exception("bad URL given: " + uri, e);
     }
     return is;
@@ -196,9 +206,11 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
           _imageCache.put(uri, ir);
         }
         catch (FileNotFoundException e) {
+          Logger.error(e, "Can't read image file; image at URI '" + uri + "' not found");
           XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
         }
         catch (IOException e) {
+          Logger.error(e, "Can't read image file; unexpected problem for URI '" + uri + "'");
           XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
         }
         finally {
@@ -301,13 +313,19 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     if (_baseURL == null) {//first try to set a base URL
       try {
         URL result = new URL(uri);
+        Logger.debug("Try to set base url %s", uri);
         setBaseURL(result.toExternalForm());
       }
       catch (MalformedURLException e) {
+        Logger.debug("Failed to set base url %s becase of %s", uri, e);
+        URI newUri = new File(".").toURI();
         try {
-          setBaseURL(new File(".").toURI().toURL().toExternalForm());
+          String newBaseUrl = newUri.toURL().toExternalForm();
+          Logger.debug("Try to set base url %s", newBaseUrl);
+          setBaseURL(newBaseUrl);
         }
         catch (Exception e1) {
+          Logger.error("Failed to set base url %s becase of %s", newUri, e1);
           XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri);
           return null;
         }
@@ -317,18 +335,20 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     try {
       // try to find it in play
       VirtualFile file = Play.getVirtualFile(uri);
-      Logger.debug("Resolved uri %s to file %s", uri, file);
+      Logger.debug("Resolved uri %s to file %s", uri, file == null ? null : file.getRealFile().getAbsolutePath());
       if (file != null && file.exists())
         return file.getRealFile().toURI().toURL().toExternalForm();
       return new URL(uri).toString();
     }
     catch (MalformedURLException e) {
+      Logger.debug(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
       XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
       try {
         URL result = new URL(new URL(_baseURL), uri);
         ret = result.toString();
       }
       catch (MalformedURLException e1) {
+        Logger.error("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
         XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
       }
     }

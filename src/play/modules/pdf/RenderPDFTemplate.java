@@ -6,6 +6,7 @@ import com.lowagie.text.pdf.PdfReader;
 import org.allcolor.yahp.converter.IHtmlToPdfTransformer;
 import org.allcolor.yahp.converter.IHtmlToPdfTransformer.PageSize;
 import org.apache.commons.lang.StringUtils;
+import org.xhtmlrenderer.swing.NaiveUserAgent;
 import play.Play;
 import play.exceptions.TemplateNotFoundException;
 import play.exceptions.UnexpectedException;
@@ -37,6 +38,7 @@ public class RenderPDFTemplate extends Result {
 
   static {
     try {
+      Play.classloader.loadApplicationClass(NaiveUserAgent.class.getName());
       transformer = (IHtmlToPdfTransformer) Play.classloader.loadClass(IHtmlToPdfTransformer.DEFAULT_PDF_RENDERER)
           .newInstance();
     }

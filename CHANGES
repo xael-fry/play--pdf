@@ -1,0 +1,13 @@
+## Changelog
+
+### 1.1
+
+* try to load NaiveUserAgent from play classpath
+** it's important to load NaiveUserAgent from play-pdf module, not core-renderer.jar (I am still not sure if this trick helps)
+* add more logs (where are resources loaded from)
+
+### 1.0
+
+* code cleanup
+* update dependencies: xml-apis.jar, shaniparser.jar
+* fork & release the old play--pdf 0.x (created by Nicolas Leroux)
