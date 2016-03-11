@@ -27,9 +27,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 200 OK
- */
+
 public class RenderPDFTemplate extends Result {
 
   private static final long serialVersionUID = 6238738409770109140L;
@@ -38,7 +36,6 @@ public class RenderPDFTemplate extends Result {
 
   static {
     try {
-      Play.classloader.loadApplicationClass(NaiveUserAgent.class.getName());
       transformer = (IHtmlToPdfTransformer) Play.classloader.loadClass(IHtmlToPdfTransformer.DEFAULT_PDF_RENDERER)
           .newInstance();
     }
