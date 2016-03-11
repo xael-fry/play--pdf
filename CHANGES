@@ -1,13 +1,19 @@
 ## Changelog
 
+### 1.2
+
+* fix bug with removing original of hacked classes from core-renderer.jar and yahp-internal.jar
+* upgrade to shaniparser 1.4.22
+* add normal slf4j logging
+
+
+
 ### 1.1
 
-* try to load NaiveUserAgent from play classpath
-** it's important to load NaiveUserAgent from play-pdf module, not core-renderer.jar (I am still not sure if this trick helps)
-* add more logs (where are resources loaded from)
+ * store dependencies in "jars" folder instead of "lib". It fixes "play deps --sync" work.
 
 ### 1.0
 
-* code cleanup
-* update dependencies: xml-apis.jar, shaniparser.jar
-* fork & release the old play--pdf 0.x (created by Nicolas Leroux)
+ * code cleanup
+ * update dependencies: xml-apis.jar, shaniparser.jar
+ * fork & release the old play--pdf 0.x (created by Nicolas Leroux)

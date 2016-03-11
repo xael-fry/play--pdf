@@ -1,7 +1,8 @@
 package org.xhtmlrenderer.pdf;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -18,7 +19,7 @@ import com.lowagie.text.pdf.codec.Base64;
  * @author Stéphane Thomas
  */
 public class ExtendedITextReplacedElementFactory extends ITextReplacedElementFactory {
-  private static final Logger log = Logger.getLogger(ExtendedITextReplacedElementFactory.class);
+  private static final Logger log = LoggerFactory.getLogger(ExtendedITextReplacedElementFactory.class);
 
 
   /**

@@ -27,7 +27,8 @@ import org.allcolor.xml.parser.CXmlParser;
 import org.allcolor.xml.parser.dom.ADocument;
 import org.allcolor.yahp.cl.converter.CDocumentCut.DocumentAndSize;
 import org.allcolor.yahp.converter.IHtmlToPdfTransformer;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.*;
 import org.w3c.tidy.Tidy;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
@@ -50,8 +51,7 @@ import java.util.regex.Pattern;
  * @author Quentin Anciaux
  * @version 0.02
  */
-public final class CHtmlToPdfFlyingSaucerTransformer implements
-    IHtmlToPdfTransformer {
+public final class CHtmlToPdfFlyingSaucerTransformer implements IHtmlToPdfTransformer {
   private static class _ITextRenderer extends ITextRenderer {
     private final Map<String, String> knownFont = new HashMap<>();
 
@@ -78,7 +78,7 @@ public final class CHtmlToPdfFlyingSaucerTransformer implements
     }
   }
 
-  private static final Logger log = Logger.getLogger(CHtmlToPdfFlyingSaucerTransformer.class);
+  private static final Logger log = LoggerFactory.getLogger(CHtmlToPdfFlyingSaucerTransformer.class);
 
   private static boolean accept(final File dir, final String name) {
     return name.toLowerCase().endsWith(".ttf");
@@ -637,10 +637,8 @@ public final class CHtmlToPdfFlyingSaucerTransformer implements
               sizes, hf);
     }
     catch (final Throwable e) {
-      log.error(e, e);
-      throw new CConvertException(
-          "ERROR: An unhandled exception occured: " + e.getMessage(),
-          e);
+      log.error("Failed to transform html to pdf", e);
+      throw new CConvertException("Failed to transform html to pdf: " + e, e);
     }
     finally {
       try {

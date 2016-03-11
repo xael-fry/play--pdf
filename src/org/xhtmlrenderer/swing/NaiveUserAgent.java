@@ -19,13 +19,14 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
-import play.Logger;
 import play.Play;
 import play.vfs.VirtualFile;
 
@@ -62,13 +63,8 @@ import java.util.LinkedHashMap;
  */
 public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
   private static final int DEFAULT_IMAGE_CACHE_SIZE = 16;
+  private static final Logger logger = LoggerFactory.getLogger(NaiveUserAgent.class);
 
-  static {
-    Logger.debug("*********************************************************************************");
-    Logger.debug("Loaded class NaiveUserAgent");
-    Logger.debug(new RuntimeException("load from: "), "see stacktrace");
-    Logger.debug("*********************************************************************************");
-  }
   /**
    * a (simple) LRU cache
    */
@@ -127,7 +123,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     InputStream is = null;
     uri = resolveURI(uri);
     try {
-      Logger.debug("Load resource from %s", uri);
+      logger.debug("Load resource from {}", uri);
       
       URLConnection connection = new URL(uri).openConnection();
 
@@ -164,7 +160,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
       return connection.getInputStream();
     }
     catch (Exception e) {
-      Logger.error(e, "bad URL given: %s", uri);
+      logger.error("bad URL given: " + uri, e);
       XRLog.exception("bad URL given: " + uri, e);
     }
     return is;
@@ -206,11 +202,11 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
           _imageCache.put(uri, ir);
         }
         catch (FileNotFoundException e) {
-          Logger.error(e, "Can't read image file; image at URI '" + uri + "' not found");
+          logger.error("Can't read image file; image at URI '" + uri + "' not found", e);
           XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
         }
         catch (IOException e) {
-          Logger.error(e, "Can't read image file; unexpected problem for URI '" + uri + "'");
+          logger.error("Can't read image file; unexpected problem for URI '" + uri + "'", e);
           XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
         }
         finally {
@@ -313,19 +309,19 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     if (_baseURL == null) {//first try to set a base URL
       try {
         URL result = new URL(uri);
-        Logger.debug("Try to set base url %s", uri);
+        logger.debug("Try to set base url {}", uri);
         setBaseURL(result.toExternalForm());
       }
       catch (MalformedURLException e) {
-        Logger.debug("Failed to set base url %s becase of %s", uri, e);
+        logger.debug("Failed to set base url {} becase of {}", uri, e);
         URI newUri = new File(".").toURI();
         try {
           String newBaseUrl = newUri.toURL().toExternalForm();
-          Logger.debug("Try to set base url %s", newBaseUrl);
+          logger.debug("Try to set base url {}", newBaseUrl);
           setBaseURL(newBaseUrl);
         }
         catch (Exception e1) {
-          Logger.error("Failed to set base url %s becase of %s", newUri, e1);
+          logger.error("Failed to set base url {} becase of {}", newUri, e1);
           XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri);
           return null;
         }
@@ -335,20 +331,20 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     try {
       // try to find it in play
       VirtualFile file = Play.getVirtualFile(uri);
-      Logger.debug("Resolved uri %s to file %s", uri, file == null ? null : file.getRealFile().getAbsolutePath());
+      logger.debug("Resolved uri {} to file {}", uri, file == null ? null : file.getRealFile().getAbsolutePath());
       if (file != null && file.exists())
         return file.getRealFile().toURI().toURL().toExternalForm();
       return new URL(uri).toString();
     }
     catch (MalformedURLException e) {
-      Logger.debug(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
+      logger.debug(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
       XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
       try {
         URL result = new URL(new URL(_baseURL), uri);
         ret = result.toString();
       }
       catch (MalformedURLException e1) {
-        Logger.error("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
+        logger.error("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
         XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
       }
     }
