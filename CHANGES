@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.5
+
+ * set normalize HTML configurable: it removed whitespaces in the beginning on element content
+
 ### 1.4
 
  * set re-formatting HTML code by JTidy configurable : it broke PDF layout sometimes (because it inserted extra line breaks)it broke PDF layout sometimes (because it inserted extra line breaks)
