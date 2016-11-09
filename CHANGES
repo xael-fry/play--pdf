@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.4
+
+ * set re-formatting HTML code by JTidy configurable : it broke PDF layout sometimes (because it inserted extra line breaks)it broke PDF layout sometimes (because it inserted extra line breaks)
+
 ### 1.3
 
 * remove unused file
