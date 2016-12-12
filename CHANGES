@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.6
+
+ * add method PDF.renderAsAttachment() that DOWNLOADS pdf instead of opening it in browser (Content-Disposition=attachment)
+
 ### 1.5
 
  * set normalize HTML configurable: it removed whitespaces in the beginning on element content

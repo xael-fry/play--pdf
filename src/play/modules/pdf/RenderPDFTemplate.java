@@ -6,7 +6,6 @@ import com.lowagie.text.pdf.PdfReader;
 import org.allcolor.yahp.converter.IHtmlToPdfTransformer;
 import org.allcolor.yahp.converter.IHtmlToPdfTransformer.PageSize;
 import org.apache.commons.lang.StringUtils;
-import org.xhtmlrenderer.swing.NaiveUserAgent;
 import play.Play;
 import play.exceptions.TemplateNotFoundException;
 import play.exceptions.UnexpectedException;
@@ -45,9 +44,11 @@ public class RenderPDFTemplate extends Result {
   }
 
   private final MultiPDFDocuments docs;
+  private final boolean inline;
 
-  public RenderPDFTemplate(MultiPDFDocuments docs, Map<String, Object> args) throws TemplateNotFoundException {
+  public RenderPDFTemplate(MultiPDFDocuments docs, boolean inline, Map<String, Object> args) throws TemplateNotFoundException {
     this.docs = docs;
+    this.inline = inline;
     renderDocuments(args);
   }
 
@@ -88,7 +89,7 @@ public class RenderPDFTemplate extends Result {
 
   @Override public void apply(Request request, Response response) {
     try {
-      response.setHeader("Content-Disposition", "inline; filename=\"" + docs.filename + "\"");
+      response.setHeader("Content-Disposition", (inline ? "inline" : "attachment") + "; filename=\"" + docs.filename + "\"");
       setContentTypeIfNotSet(response, "application/pdf");
       // FIX IE bug when using SSL
       if (request.secure && isIE(request))
