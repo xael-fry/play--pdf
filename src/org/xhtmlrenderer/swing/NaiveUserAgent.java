@@ -306,10 +306,10 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
       VirtualFile file = Play.getVirtualFile(uri);
       logger.debug("Resolved uri {} to file {}", uri, file == null ? null : file.getRealFile().getAbsolutePath());
       if (file != null && file.exists())
-        return file.getRealFile().toURI().toURL().toExternalForm();
+        return file.getRealFile().getCanonicalFile().toURI().toURL().toExternalForm();
       return new URL(uri).toString();
     }
-    catch (MalformedURLException e) {
+    catch (IOException e) {
       logger.debug(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
       XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
       try {

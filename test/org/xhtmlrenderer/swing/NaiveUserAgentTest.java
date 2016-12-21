@@ -24,10 +24,6 @@ public class NaiveUserAgentTest {
     if (!this.userDir.startsWith("/")) {
       this.userDir = "/" + this.userDir;
     }
-    if (!this.userDir.endsWith("/.")) {
-      this.userDir = this.userDir + "/.";
-    }
-
   }
 
   @Ignore

@@ -45,10 +45,12 @@ public class RenderPDFTemplate extends Result {
 
   private final MultiPDFDocuments docs;
   private final boolean inline;
+  private final Map<String, Object> arguments;
 
   public RenderPDFTemplate(MultiPDFDocuments docs, boolean inline, Map<String, Object> args) throws TemplateNotFoundException {
     this.docs = docs;
     this.inline = inline;
+    this.arguments = args;
     renderDocuments(args);
   }
 
@@ -153,5 +155,7 @@ public class RenderPDFTemplate extends Result {
     }
   }
 
-
+  public Map<String, Object> getArguments() {
+    return arguments;
+  }
 }

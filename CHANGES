@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.8
+
+ * add class PDFRenderer with non-static methods - useful for mocking in tests
+ * add method RenderPDFTemplate.getArguments() - now we can catch it in tests and verify
+ 
 ### 1.7
 
  * add class PDFRenderer with non-static methods - useful for mocking in tests
