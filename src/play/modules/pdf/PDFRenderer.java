@@ -1,7 +1,6 @@
 package play.modules.pdf;
 
 import javax.inject.Singleton;
-import java.security.Policy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,30 +19,38 @@ import java.util.Map;
  */
 @Singleton
 public class PDFRenderer {
-  public Parameters with(String name, Object value) {
-    return new Parameters(name, value);
+  public Builder with(String name, Object value) {
+    return new Builder(name, value);
+  }
+  
+  public void renderPDF(Map<String, Object> arguments) {
+    // TODO Use another method that uses `arguments` instead of `LocalvariablesNamesEnhancer`
+    PDF.renderPDF(arguments);
   }
 
-  public class Parameters {
-    private final Map<String, Object> parameters = new HashMap<>();
+  public void renderPDF(String templateName, Map<String, Object> arguments) {
+    // TODO Use another method that uses `arguments` instead of `LocalvariablesNamesEnhancer`
+    PDF.renderPDF(templateName, arguments);
+  }
 
-    private Parameters(String name, Object value) {
+  public class Builder {
+    private final Map<String, Object> arguments = new HashMap<>();
+
+    private Builder(String name, Object value) {
       with(name, value);
     }
 
-    public final Parameters with(String name, Object value) {
-      parameters.put(name, value);
+    public final Builder with(String name, Object value) {
+      arguments.put(name, value);
       return this;
     }
 
     public void render() {
-      // TODO Use another method that uses `parameters` instead of `LocalvariablesNamesEnhancer`
-      PDF.renderPDF(parameters);
+      PDFRenderer.this.renderPDF(arguments);
     }
 
     public void render(String templateName) {
-      // TODO Use another method that uses `parameters` instead of `LocalvariablesNamesEnhancer`
-      PDF.renderPDF(templateName, parameters);
+      PDFRenderer.this.renderPDF(templateName, arguments);
     }
   }
 }
