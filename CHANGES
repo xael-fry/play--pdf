@@ -1,7 +1,12 @@
 ## Changelog
 
+### 1.9
+
+ * add methods to PDFRenderer: pageSize(), inline(), fileName()
+
 ### 1.8
 
+ * fix methods PDFRenderer.renderPDF(Map<String, Object> arguments) to work without play enhancers
  * add methods PDFRenderer.renderPDF(Map<String, Object> arguments)
  * add class PDFRenderer with non-static methods - useful for mocking in tests
  * add method RenderPDFTemplate.getArguments() - now we can catch it in tests and verify
