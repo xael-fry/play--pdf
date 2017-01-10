@@ -1,5 +1,6 @@
 package play.modules.pdf;
 
+import static play.modules.pdf.PDF.generateTemplateAsPDF;
 import static play.modules.pdf.PDF.renderTemplateAsPDF;
 
 import java.util.HashMap;
@@ -42,30 +43,24 @@ public class PDFRenderer {
     }
 
     public final Builder with(String name, Object value) {
-      arguments.put(name, value);
+      this.arguments.put(name, value);
       return this;
     }
 
     public void render() {
-      PDFRenderer.this.renderPDF(arguments, inline, options());
+      PDFRenderer.this.renderPDF(this.arguments, this.inline, options());
     }
 
     public void render(String templateName) {
-      PDFRenderer.this.renderPDF(templateName, arguments, inline, options());
+      PDFRenderer.this.renderPDF(templateName, this.arguments, this.inline, options());
     }
 
-    private PDF.Options options() {
-      if (fileName == null && pageSize == null) {
-        return null;
-      }
-      PDF.Options options = new PDF.Options();
-      if (fileName != null) {
-        options.filename = fileName;
-      }
-      if (pageSize != null) {
-        options.pageSize = pageSize;
-      }
-      return options;
+    public byte[] generate(String templateName) {
+      return generateTemplateAsPDF(templateName, this.arguments, this.inline, options());
+    }
+
+    public byte[] generate() {
+      return generateTemplateAsPDF(PDF.templateNameFromAction("html"), this.arguments, this.inline, options());
     }
 
     public Builder inline(boolean inline) {
@@ -81,6 +76,20 @@ public class PDFRenderer {
     public Builder pageSize(IHtmlToPdfTransformer.PageSize pageSize) {
       this.pageSize = pageSize;
       return this;
+    }
+
+    private PDF.Options options() {
+      if (this.fileName == null && this.pageSize == null) {
+        return null;
+      }
+      PDF.Options options = new PDF.Options();
+      if (this.fileName != null) {
+        options.filename = this.fileName;
+      }
+      if (this.pageSize != null) {
+        options.pageSize = this.pageSize;
+      }
+      return options;
     }
   }
 }

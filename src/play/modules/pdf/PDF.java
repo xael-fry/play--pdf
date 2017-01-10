@@ -21,6 +21,7 @@
  */
 package play.modules.pdf;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -73,6 +74,11 @@ public class PDF {
       this.options = options;
     }
 
+    /**
+     * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+     *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
+     */
+    @Deprecated
     public PDFDocument(String template, Options options, Object... args) {
       this(template, options);
 
@@ -126,6 +132,11 @@ public class PDF {
       return this;
     }
 
+    /**
+     * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+     *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
+     */
+    @Deprecated
     public MultiPDFDocuments add(String template, Options options, Object... args) {
       documents.add(new PDFDocument(template, options, args));
       return this;
@@ -142,15 +153,28 @@ public class PDF {
    * 
    * @param args
    *          The template data
+   * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+   *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
    */
+  @Deprecated
   public static void renderPDF(Object... args) {
     render(args);
   }
 
+  /**
+   * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+   *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
+   */
+  @Deprecated
   public static void render(Object... args) {
     writePDF(null, true, args);
   }
 
+  /**
+   * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+   *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
+   */
+  @Deprecated
   public static void renderAsAttachment(Object... args) {
     writePDF(null, false, args);
   }
@@ -159,10 +183,11 @@ public class PDF {
    * Render the corresponding template into a file
    * 
    * @param file
-   *          the file to render to, or null to render to the current Response object
-   * @param args
-   *          the template data
+   *          the file to render to, or null to render to the current the template data
+   * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+   *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
    */
+  @Deprecated
   public static void writePDF(File file, Object... args) {
     try {
       OutputStream os = new FileOutputStream(file);
@@ -174,6 +199,11 @@ public class PDF {
     }
   }
 
+  /**
+   * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+   *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
+   */
+  @Deprecated
   public static void writePDF(OutputStream out, Object... args) {
     writePDF(out, true, args);
   }
@@ -182,10 +212,11 @@ public class PDF {
    * Render the corresponding template into a file
    * 
    * @param out
-   *          the stream to render to, or null to render to the current Response object
-   * @param args
-   *          the template data
+   *          the stream to render to, or null to render to the current the template data
+   * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+   *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
    */
+  @Deprecated
   public static void writePDF(OutputStream out, boolean inline, Object... args) {
     final Http.Request request = Http.Request.current();
     final String format = request.format;
@@ -228,12 +259,9 @@ public class PDF {
       docs = new MultiPDFDocuments();
       docs.add(singleDoc);
       if (singleDoc.template == null) {
-        singleDoc.template = request.action.replace(".", "/") + "." + (format == null ? "html" : format);
+        singleDoc.template = templateNameFromAction(format);
       }
-      if (singleDoc.options != null && singleDoc.options.filename != null)
-        docs.filename = singleDoc.options.filename;
-      else
-        docs.filename = FilenameUtils.getBaseName(singleDoc.template) + ".pdf";
+      docs = createMultiPDFDocuments(singleDoc);
     }
 
     renderTemplateAsPDF(out, docs, inline, args);
@@ -291,6 +319,18 @@ public class PDF {
     renderTemplateAsPDF(null, docs, inline, args);
   }
 
+  public static byte[] generateTemplateAsPDF(String templateName, Map<String, Object> args, boolean inline,
+      PDF.Options options) {
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+    PDF.PDFDocument singleDoc = new PDF.PDFDocument();
+    singleDoc.template = templateName;
+    singleDoc.options = options;
+    PDF.MultiPDFDocuments docs = createMultiPDFDocuments(singleDoc);
+    renderTemplateAsPDF(out, docs, inline, args);
+    return out.toByteArray();
+  }
+
   /**
    * Render a specific template
    * 
@@ -298,7 +338,10 @@ public class PDF {
    *          The template name
    * @param args
    *          The template data
+   * @deprecated Use {@link #renderTemplateAsPDF(OutputStream, MultiPDFDocuments, boolean, Map)} or
+   *             {@link #generateTemplateAsPDF(java.lang.String, java.util.Map, boolean, play.modules.pdf.PDF.Options)}
    */
+  @Deprecated
   public static void renderTemplateAsPDF(OutputStream out, MultiPDFDocuments docs, boolean inline, Object... args) {
     Map<String, Object> arguments = new HashMap<>();
 
@@ -334,24 +377,25 @@ public class PDF {
    *          The template data
    */
   static void renderTemplateAsPDF(OutputStream out, MultiPDFDocuments docs, boolean inline, Map<String, Object> args) {
-    Scope.RenderArgs templateBinding = Scope.RenderArgs.current();
-    templateBinding.data.putAll(args);
+    Map<String, Object> templateBinding = new HashMap<>();
+    templateBinding.putAll(args);
+    Scope.RenderArgs renderArgs = Scope.RenderArgs.current();
+    if (renderArgs != null) {
+      templateBinding.putAll(renderArgs.data);
+    }
 
     templateBinding.put("session", Scope.Session.current());
     templateBinding.put("request", Http.Request.current());
     templateBinding.put("flash", Scope.Flash.current());
     templateBinding.put("params", Scope.Params.current());
-    try {
-      templateBinding.put("errors", Validation.errors());
-    } catch (Exception ex) {
-      throw new UnexpectedException(ex);
-    }
+    templateBinding.put("errors", Validation.errors());
+
     try {
       if (out == null) {
         // we're rendering to the current Response object
-        throw new RenderPDFTemplate(docs, inline, templateBinding.data);
+        throw new RenderPDFTemplate(docs, inline, templateBinding);
       } else {
-        RenderPDFTemplate renderer = new RenderPDFTemplate(docs, inline, templateBinding.data);
+        RenderPDFTemplate renderer = new RenderPDFTemplate(docs, inline, templateBinding);
         renderer.writePDF(out, Http.Request.current());
       }
     } catch (TemplateNotFoundException ex) {

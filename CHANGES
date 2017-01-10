@@ -1,5 +1,11 @@
 ## Changelog
 
+### 2.0
+
+ * Add method pdfRenderer.with(...).generate("some.html") that RETURNS pdf
+ * Now PDF generation works even without current http request (e.g. in jobs)
+ * Mark as @deprecated all methods that work only with play enhancers
+
 ### 1.9
 
  * add methods to PDFRenderer: pageSize(), inline(), fileName()

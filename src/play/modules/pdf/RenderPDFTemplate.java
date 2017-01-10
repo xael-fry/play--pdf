@@ -29,8 +29,6 @@ import java.util.Map;
 
 public class RenderPDFTemplate extends Result {
 
-  private static final long serialVersionUID = 6238738409770109140L;
-
   protected static final IHtmlToPdfTransformer transformer;
 
   static {
@@ -114,7 +112,7 @@ public class RenderPDFTemplate extends Result {
 
   private void renderPDF(OutputStream out, Request request) throws Exception {
     Map<?, ?> properties = Play.configuration;
-    String uri = request.getBase() + request.url;
+    String uri = request == null ? "" : (request.getBase() + request.url);
     if (docs.documents.size() == 1) {
       renderDoc(docs.documents.get(0), uri, properties, out);
     }
