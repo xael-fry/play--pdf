@@ -32,6 +32,14 @@ public class PDFRenderer {
     renderTemplateAsPDF(templateName, arguments, inline, options);
   }
 
+  public byte[] generatePDF(Map<String, Object> args, boolean inline, PDF.Options options) {
+    return generateTemplateAsPDF(PDF.templateNameFromAction("html"), args, inline, options);
+  }
+
+  public byte[] generatePDF(String templateName, Map<String, Object> args, boolean inline, PDF.Options options) {
+    return generateTemplateAsPDF(templateName, args, inline, options);
+  }
+
   public class Builder {
     private final Map<String, Object> arguments = new HashMap<>();
     private boolean inline = true;
@@ -56,11 +64,11 @@ public class PDFRenderer {
     }
 
     public byte[] generate(String templateName) {
-      return generateTemplateAsPDF(templateName, this.arguments, this.inline, options());
+      return PDFRenderer.this.generatePDF(templateName, arguments, inline, options());
     }
 
     public byte[] generate() {
-      return generateTemplateAsPDF(PDF.templateNameFromAction("html"), this.arguments, this.inline, options());
+      return PDFRenderer.this.generatePDF(arguments, inline, options());
     }
 
     public Builder inline(boolean inline) {

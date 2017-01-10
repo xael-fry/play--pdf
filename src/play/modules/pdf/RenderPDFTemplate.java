@@ -55,7 +55,8 @@ public class RenderPDFTemplate extends Result {
   private void renderDocuments(Map<String, Object> args) {
     for (PDFDocument doc : docs.documents) {
       Request request = Http.Request.current();
-      String templateName = PDF.resolveTemplateName(doc.template, request, request.format);
+      String format = request == null ? null : request.format;
+      String templateName = PDF.resolveTemplateName(doc.template, request, format);
       Template template = TemplateLoader.load(templateName);
       doc.args.putAll(args);
       doc.content = template.render(new HashMap<>(doc.args));
