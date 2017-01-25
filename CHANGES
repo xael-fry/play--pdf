@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.1
+ * fix bug that added the same title to all PDFs
+
 ### 2.0
 
  * Add method pdfRenderer.with(...).generate("some.html") that RETURNS pdf
