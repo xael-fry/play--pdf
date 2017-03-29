@@ -1,9 +1,10 @@
+classes
 dist
-lib
 tmp
 samples-and-tests/pdf/tmp
 samples-and-tests/pdf/log
 samples-and-tests/pdf/modules
+samples-and-tests/pdf/test-result
 .settings
 .project
 eclipse
