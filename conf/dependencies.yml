@@ -1,4 +1,4 @@
-self: play -> pdf 2.1
+self: play -> pdf 2.2
 
 require:
     - play
